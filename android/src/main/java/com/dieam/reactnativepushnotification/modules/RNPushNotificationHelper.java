@@ -158,6 +158,8 @@ public class RNPushNotificationHelper {
                 title = context.getPackageManager().getApplicationLabel(appInfo).toString();
             }
 
+            NotificationManager notificationManager = notificationManager();
+
             NotificationCompat.Builder notification;
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -174,6 +176,7 @@ public class RNPushNotificationHelper {
                 NotificationChannel channel = new NotificationChannel(channelId, "rn-push-notification-channel", importance);
                 channel.enableLights(true);
                 channel.enableVibration(true);
+                notificationManager.createNotificationChannel(channel);
 
                 notification = new NotificationCompat.Builder(context, channelId)
                     .setContentTitle(title)
@@ -290,8 +293,6 @@ public class RNPushNotificationHelper {
 
             PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
-
-            NotificationManager notificationManager = notificationManager();
 
             notification.setContentIntent(pendingIntent);
 
