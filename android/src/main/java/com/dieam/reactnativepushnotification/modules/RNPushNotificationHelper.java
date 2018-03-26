@@ -163,29 +163,25 @@ public class RNPushNotificationHelper {
             NotificationCompat.Builder notification;
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                notification = new NotificationCompat.Builder(context)
-                    .setContentTitle(title)
+                notification = new NotificationCompat.Builder(context);
+            } else {
+                String channelId = "step_reminders_channel_id";
+
+                NotificationChannel channel = new NotificationChannel(channelId,
+                        "Steps",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                channel.setDescription("This channel is used for Step Reminders.");
+                notificationManager.createNotificationChannel(channel);
+
+                notification = new NotificationCompat.Builder(context, channelId)
+                    .setChannelId(channelId);
+            }
+
+            notification.setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
                     .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(bundle.getBoolean("autoCancel", true));
-            } else {
-                String channelId = "rn-push-notification-channel_id";
-
-                int importance = NotificationManager.IMPORTANCE_DEFAULT;
-                NotificationChannel channel = new NotificationChannel(channelId, "rn-push-notification-channel", importance);
-                channel.enableLights(true);
-                channel.enableVibration(true);
-                notificationManager.createNotificationChannel(channel);
-
-                notification = new NotificationCompat.Builder(context, channelId)
-                    .setContentTitle(title)
-                    .setTicker(bundle.getString("ticker"))
-                    .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .setAutoCancel(bundle.getBoolean("autoCancel", true))
-                    .setChannelId(channelId);
-            }
 
             String group = bundle.getString("group");
             if (group != null) {
