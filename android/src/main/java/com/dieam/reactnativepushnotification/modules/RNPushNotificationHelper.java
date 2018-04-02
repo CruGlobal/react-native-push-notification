@@ -159,23 +159,10 @@ public class RNPushNotificationHelper {
             }
 
             NotificationManager notificationManager = notificationManager();
+            String channelId = bundle.getString("channel_id");
 
-            NotificationCompat.Builder notification;
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                notification = new NotificationCompat.Builder(context);
-            } else {
-                String channelId = "step_reminders_channel_id";
-
-                NotificationChannel channel = new NotificationChannel(channelId,
-                        "Steps",
-                        NotificationManager.IMPORTANCE_DEFAULT);
-                channel.setDescription("This channel is used for Step Reminders.");
-                notificationManager.createNotificationChannel(channel);
-
-                notification = new NotificationCompat.Builder(context, channelId)
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channelId)
                     .setChannelId(channelId);
-            }
 
             notification.setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
