@@ -158,30 +158,24 @@ public class RNPushNotificationHelper {
                 title = context.getPackageManager().getApplicationLabel(appInfo).toString();
             }
 
+            String channelId = "step_reminders_channel_id";
             NotificationManager notificationManager = notificationManager();
 
-            NotificationCompat.Builder notification;
-
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                notification = new NotificationCompat.Builder(context);
-            } else {
-                String channelId = "step_reminders_channel_id";
-
-                NotificationChannel channel = new NotificationChannel(channelId,
-                        "Steps",
-                        NotificationManager.IMPORTANCE_DEFAULT);
-                channel.setDescription("This channel is used for Step Reminders.");
-                notificationManager.createNotificationChannel(channel);
-
-                notification = new NotificationCompat.Builder(context, channelId)
-                    .setChannelId(channelId);
-            }
-
-            notification.setContentTitle(title)
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channelId)
+                    .setChannelId(channelId)
+                    .setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
                     .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(bundle.getBoolean("autoCancel", true));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(channelId,
+                        "General",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                channel.setDescription("This channel is used for general notifications.");
+                notificationManager.createNotificationChannel(channel);
+            }
 
             String group = bundle.getString("group");
             if (group != null) {
