@@ -4,6 +4,7 @@ package com.dieam.reactnativepushnotification.modules;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -40,6 +41,8 @@ public class RNPushNotificationHelper {
     private static final int ONE_MINUTE = 60 * 1000;
     private static final long ONE_HOUR = 60 * ONE_MINUTE;
     private static final long ONE_DAY = 24 * ONE_HOUR;
+
+    private static String GENERAL_CHANNEL_ID = "general_channel_id";
 
     public RNPushNotificationHelper(Application context) {
         this.context = context;
@@ -157,12 +160,22 @@ public class RNPushNotificationHelper {
                 title = context.getPackageManager().getApplicationLabel(appInfo).toString();
             }
 
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(context)
+            NotificationManager notificationManager = notificationManager();
+
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, GENERAL_CHANNEL_ID)
                     .setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
                     .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setAutoCancel(bundle.getBoolean("autoCancel", true));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(GENERAL_CHANNEL_ID,
+                        "General",
+                        NotificationManager.IMPORTANCE_DEFAULT);
+                channel.setDescription("This channel is used for general notifications.");
+                notificationManager.createNotificationChannel(channel);
+            }
 
             String group = bundle.getString("group");
             if (group != null) {
@@ -270,8 +283,6 @@ public class RNPushNotificationHelper {
 
             PendingIntent pendingIntent = PendingIntent.getActivity(context, notificationID, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
-
-            NotificationManager notificationManager = notificationManager();
 
             notification.setContentIntent(pendingIntent);
 
