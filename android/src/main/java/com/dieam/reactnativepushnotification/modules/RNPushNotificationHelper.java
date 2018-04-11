@@ -42,6 +42,8 @@ public class RNPushNotificationHelper {
     private static final long ONE_HOUR = 60 * ONE_MINUTE;
     private static final long ONE_DAY = 24 * ONE_HOUR;
 
+    private static String GENERAL_CHANNEL_ID = "general_channel_id";
+
     public RNPushNotificationHelper(Application context) {
         this.context = context;
         this.scheduledNotificationsPersistence = context.getSharedPreferences(RNPushNotificationHelper.PREFERENCES_KEY, Context.MODE_PRIVATE);
@@ -158,11 +160,9 @@ public class RNPushNotificationHelper {
                 title = context.getPackageManager().getApplicationLabel(appInfo).toString();
             }
 
-            String channelId = "step_reminders_channel_id";
             NotificationManager notificationManager = notificationManager();
 
-            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, channelId)
-                    .setChannelId(channelId)
+            NotificationCompat.Builder notification = new NotificationCompat.Builder(context, GENERAL_CHANNEL_ID)
                     .setContentTitle(title)
                     .setTicker(bundle.getString("ticker"))
                     .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
@@ -170,7 +170,7 @@ public class RNPushNotificationHelper {
                     .setAutoCancel(bundle.getBoolean("autoCancel", true));
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(channelId,
+                NotificationChannel channel = new NotificationChannel(GENERAL_CHANNEL_ID,
                         "General",
                         NotificationManager.IMPORTANCE_DEFAULT);
                 channel.setDescription("This channel is used for general notifications.");
